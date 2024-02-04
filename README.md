@@ -2,7 +2,7 @@
 
 This repository contains the Rmd files needed to recreate the use cases presented in
 the manuscript "txtools: an R package facilitating analysis of RNA modifications,
-structures, and interactions ".
+structures, and interactions".
 
 It contains two directories with two versions of the code:
 

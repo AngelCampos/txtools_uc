@@ -20,7 +20,7 @@ bibliography: txtools_uc.bib
 ---
 
 ```{r, Global Options, echo = F}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.show = 'hide', eval = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.show = 'hide')
 ```
 
 # Background
@@ -93,12 +93,12 @@ sapply(nDirs[!nDirs %in% list.dirs()], "dir.create") %>% invisible()
 ## Download omic references
 
 ```{r}
-download.file(url = "https://zenodo.org/api/files/9c1db71d-3c18-4d24-ae72-6b6bc4f5739e/uc1_geneAnnot.bed", destfile = "omicRefs/uc1_geneAnnot.bed")
-download.file(url = "https://zenodo.org/api/files/9c1db71d-3c18-4d24-ae72-6b6bc4f5739e/uc1_genome.fa", destfile = "omicRefs/uc1_genome.fa")
+download.file(url = "https://zenodo.org/records/8278410/files/uc1_geneAnnot.bed", destfile = "omicRefs/uc1_geneAnnot.bed")
+download.file(url = "https://zenodo.org/records/8278410/files/uc1_genome.fa", destfile = "omicRefs/uc1_genome.fa")
 download.file(url = "https://zenodo.org/record/8278045/files/uc1_RNAmods.rds", destfile = "omicRefs/uc1_RNAmods.rds")
-download.file(url = "https://zenodo.org/api/files/9c1db71d-3c18-4d24-ae72-6b6bc4f5739e/uc2_geneAnnot.bed", destfile = "omicRefs/uc2.geneAnnot.bed")
-download.file(url = "https://zenodo.org/api/files/9c1db71d-3c18-4d24-ae72-6b6bc4f5739e/uc3_geneAnnot.bed", destfile = "omicRefs/uc3_geneAnnot.bed")
-download.file(url = "https://zenodo.org/api/files/9c1db71d-3c18-4d24-ae72-6b6bc4f5739e/uc3_genome.fa" , destfile = "omicRefs/uc3_genome.fa")
+download.file(url = "https://zenodo.org/records/8278410/files/uc2_geneAnnot.bed", destfile = "omicRefs/uc2.geneAnnot.bed")
+download.file(url = "https://zenodo.org/records/8278410/files/uc3_geneAnnot.bed", destfile = "omicRefs/uc3_geneAnnot.bed")
+download.file(url = "https://zenodo.org/records/8278410/files/uc3_genome.fa", destfile = "omicRefs/uc3_genome.fa")
 pathTomm9Genome = NULL # Please add here a path to a local copy of the mm9 reference genome. Not included in downloads due to size and potential redundancy.
 if(is.null(pathTomm9Genome)){stop("Path to a FASTA file of the mm9 genome is required")}
 ```
@@ -134,7 +134,7 @@ FASTQDir <- "data/fastq/GSE58200"; dir.create(FASTQDir, recursive = TRUE)
 BAMDir <- "data/bam/GSE58200"; dir.create(BAMDir, recursive = TRUE)
 ```
 
-```{r, eval = FALSE}
+```{r}
 get_fastqs(GSEtab_GSE58200, "data/fastq/GSE58200")
 ```
 
@@ -142,7 +142,7 @@ get_fastqs(GSEtab_GSE58200, "data/fastq/GSE58200")
 
 Reads are mapped to the reference sequence using Rsubread [@Liao2019-oo].
 
-```{r, eval = FALSE}
+```{r}
 # Align to reference
 buildindex(basename = "sc_rib", reference = sc_faGenome)
 lapply(META_GSE58200$FASTQ, function(FASTQ){
@@ -181,7 +181,7 @@ variables in a txDT along the same windown of the known pseudouridylated sites
 6. Using the resulting txDT and a common call to ggplot2’s scatter plot, the 
 results for all four ribosomal transcripts are shown in Figure 2. 
 
-```{r, eval = FALSE}
+```{r}
 # Load omic references
 GENOME <- tx_load_genome(sc_faGenome)
 TXOME <- tx_load_bed(sc_geneAnno)
@@ -196,7 +196,7 @@ sc_txDTL <- lapply(file.path(BAMDir, META_GSE58200$BAM), function(bam){
 names(sc_txDTL) <- c("control", "CMC")
 ```
 
-```{r, eval = FALSE}
+```{r}
 # Join control and treatment results in one txDT for easier plotting
 sc_txDTL$RES <- sc_txDTL[[1]][,1:7]
 sc_txDTL$RES$SR_1bpDS_CMC <- sc_txDTL$CMC$startRatio1bpDS
@@ -293,7 +293,7 @@ FASTQDir <- "data/fastq/GSE163500"; dir.create(FASTQDir, recursive = TRUE)
 BAMDir <- "data/bam/GSE163500"; dir.create(BAMDir, recursive = TRUE)
 ```
 
-```{r, eval = FALSE}
+```{r}
 get_fastqs(GSEtab_GSE163500, "data/fastq/GSE163500") # download FASTQS
 ```
 
@@ -301,7 +301,7 @@ get_fastqs(GSEtab_GSE163500, "data/fastq/GSE163500") # download FASTQS
 
 Reads are mapped to the reference sequence using Rsubread [@Liao2019-oo].
 
-```{r, eval = FALSE}
+```{r}
 # Align to reference 
 buildindex(basename = "mm9_refGenome", reference = mm_faGenome)
 lapply(list.files(FASTQDir), function(FASTQ){
@@ -467,7 +467,7 @@ FASTQDir <- "data/fastq/GSE135826"; dir.create(FASTQDir, recursive = T)
 BAMDir <- "data/bam/GSE135826"; dir.create(BAMDir, recursive = T)
 ```
 
-```{r, eval = FALSE}
+```{r}
 get_fastqs(GSEtab_GSE135826, "data/fastq/GSE135826")
 ```
 
@@ -490,7 +490,7 @@ META_GSE135826 <- META_GSE135826[order(META_GSE135826$temp, META_GSE135826$treat
 
 Reads are mapped to the reference sequence using Rsubread [@Liao2019-oo].
 
-```{r, eval = FALSE}
+```{r}
 # Align to reference with Rsubread
 buildindex(basename = "tk_RsubRef", reference = tk_faGenome)
 r1Files <- grep(list.files(FASTQDir), pattern = "_1.fastq.gz", value = TRUE)
@@ -528,7 +528,7 @@ threshold of MRD_CtoT > 0.005.
 as the temperature of growth increases, reaching the highest levels at 95 °C.
 7. Plot a sequence logo with the ggseqlogo wrapper tx_plot_ggseqlogo(). (Figure 8)
 
-```{r, Tkoda data processing, eval = FALSE}
+```{r, Tkoda data processing}
 path_bam2txDT <- system.file("bam2txDT.R", package = "txtools") # bam2txDT.R script path in local txtools installation
 lapply(GSEtab_GSE135826$BAM, function(bamFile){
     system(paste("Rscript", path_bam2txDT, "-i ", bamFile, "-p TRUE -g", 
@@ -602,6 +602,52 @@ ggsave(filename = "figs/seqlogo_tk.png", gg_tk4, height = 3, width = 6, bg = "wh
 
 **Figure 8.** Case study # 3 - Dynamic RNA acetylation in T. kodakarensis’ across a 
 temperature gradient. Sequence logo at detected putative acetylated sites
+
+# Supplementary analysis - Bridging paired-end reads
+
+> The code to execute this analysis is provided in the Rscript `supp_PairedvsSingle.R`
+
+To showcase the importance of bridging paired-end reads, which is implemented 
+as an option by txtools but not, to our knowledge, by other tools, we analyzed 
+m6A-seq data in yeast. In m6A-seq [@dominissini2012topology], RNA is first 
+fragmented and then subjected to immunoprecipitation using an anti-m6A antibody,
+resulting in selective capturing of methylated fragments. These fragments are
+then sequenced from both ends. The typical analytic pipeline consists of peak 
+calling, based on coverage, in the immunoprecipitated data. While m6A-seq is 
+not considered, inherently, a single-nucleotide resolution methodology, in an
+idealized scenario (infinite coverage, no sources of noise), the signal should 
+peak precisely over the methylated adenosine in the DRAC motif. 
+
+Given that the size of the immunoprecipitated fragments is around 100-150 nt 
+and oftentimes only ~30 nt are sequenced from each end, relying only on the 
+sequenced ends results only in partial coverage of the insert. txtools offers 
+the possibility of computationally bridging the reads, allowing to restore the
+full-length fragment. To assess to what extent the lack of complete coverage 
+resulted in inaccurate peak calling, we analyzed existing m6A-seq data in yeast
+[@schwartz2013high] using txtools, in two modes: either in paired-end mode 
+(in which paired ends are bridged) or in single-end mode (in which each read
+is considered a separate entity).  We observed a roughly 8% increase in the 
+number of peaks detected precisely centered on a DRAC motif (330 out of 1475
+peaks were centered on the motif in single-end processing vs 429 out of 1405 
+peaks in paired-end processing) (Fig. S1). 
+
+![Figure S1](figs/readsProc_BP2.png)
+
+This was accompanied by a mild 
+increase in the number of peaks called in single-end mode, in comparison to
+paired-end mode (Fig. S2). 
+
+![Figure S2](figs/readsProc_BP1.png)
+
+Thus, without bridging paired ends reads, more 
+peaks are called but of poorer quality. An investigation into the source of 
+these miscalled peaks revealed that oftentimes a single peak - centered within
+a DRAC motif - in paired-end mode, got split into multiple smaller peaks in 
+single-end mode, resulting in calling of multiple, erroneous sites instead of
+a single correct one (Fig. S3). This analysis thus highlights the added value 
+of paired-end information for the accurate calling of sites.
+
+![Figure S3](figs/readsProc_covPeaks.png)
 
 # References
 

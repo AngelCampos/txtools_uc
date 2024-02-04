@@ -1,22 +1,20 @@
 txtools use cases
 ================
 Miguel A. García-Campos
-2023-08-25
+2024-02-04
 
--   <a href="#background" id="toc-background">Background</a>
--   <a href="#setup" id="toc-setup">Setup</a>
--   <a href="#use-case-1-pseudouridine-in-yeast-rrna-carlile-et-al-2014"
-    id="toc-use-case-1-pseudouridine-in-yeast-rrna-carlile-et-al-2014">Use
-    case #1. Pseudouridine in yeast rRNA (Carlile et al., 2014)</a>
--   <a href="#use-case-2-m6a-miclip2-in-mesc-körtel-et-al-2021"
-    id="toc-use-case-2-m6a-miclip2-in-mesc-körtel-et-al-2021">Use case #2.
-    m6A miCLIP2 in mESC (Körtel et al., 2021)</a>
--   <a
-    href="#use-case-3-ac4c-in-the-archea-t-kodakarensis-sas-chen-et-al-2020"
-    id="toc-use-case-3-ac4c-in-the-archea-t-kodakarensis-sas-chen-et-al-2020">Use
-    case #3. ac4C in the archea T. kodakarensis (Sas-Chen et al., 2020)</a>
--   <a href="#references" id="toc-references">References</a>
--   <a href="#session-info" id="toc-session-info">Session Info</a>
+- [Background](#background)
+- [Setup](#setup)
+- [Use case \#1. Pseudouridine in yeast rRNA (Carlile et al.,
+  2014)](#use-case-1-pseudouridine-in-yeast-rrna-carlile-et-al-2014)
+- [Use case \#2. m6A miCLIP2 in mESC (Körtel et al.,
+  2021)](#use-case-2-m6a-miclip2-in-mesc-körtel-et-al-2021)
+- [Use case \#3. ac4C in the archea T. kodakarensis (Sas-Chen et al.,
+  2020)](#use-case-3-ac4c-in-the-archea-t-kodakarensis-sas-chen-et-al-2020)
+- [Supplementary analysis - Bridging paired-end
+  reads](#supplementary-analysis---bridging-paired-end-reads)
+- [References](#references)
+- [Session Info](#session-info)
 
 # Background
 
@@ -91,12 +89,12 @@ sapply(nDirs[!nDirs %in% list.dirs()], "dir.create") %>% invisible()
 ## Download omic references
 
 ``` r
-download.file(url = "https://zenodo.org/api/files/9c1db71d-3c18-4d24-ae72-6b6bc4f5739e/uc1_geneAnnot.bed", destfile = "omicRefs/uc1_geneAnnot.bed")
-download.file(url = "https://zenodo.org/api/files/9c1db71d-3c18-4d24-ae72-6b6bc4f5739e/uc1_genome.fa", destfile = "omicRefs/uc1_genome.fa")
+download.file(url = "https://zenodo.org/records/8278410/files/uc1_geneAnnot.bed", destfile = "omicRefs/uc1_geneAnnot.bed")
+download.file(url = "https://zenodo.org/records/8278410/files/uc1_genome.fa", destfile = "omicRefs/uc1_genome.fa")
 download.file(url = "https://zenodo.org/record/8278045/files/uc1_RNAmods.rds", destfile = "omicRefs/uc1_RNAmods.rds")
-download.file(url = "https://zenodo.org/api/files/9c1db71d-3c18-4d24-ae72-6b6bc4f5739e/uc2_geneAnnot.bed", destfile = "omicRefs/uc2.geneAnnot.bed")
-download.file(url = "https://zenodo.org/api/files/9c1db71d-3c18-4d24-ae72-6b6bc4f5739e/uc3_geneAnnot.bed", destfile = "omicRefs/uc3_geneAnnot.bed")
-download.file(url = "https://zenodo.org/api/files/9c1db71d-3c18-4d24-ae72-6b6bc4f5739e/uc3_genome.fa" , destfile = "omicRefs/uc3_genome.fa")
+download.file(url = "https://zenodo.org/records/8278410/files/uc2_geneAnnot.bed", destfile = "omicRefs/uc2.geneAnnot.bed")
+download.file(url = "https://zenodo.org/records/8278410/files/uc3_geneAnnot.bed", destfile = "omicRefs/uc3_geneAnnot.bed")
+download.file(url = "https://zenodo.org/records/8278410/files/uc3_genome.fa", destfile = "omicRefs/uc3_genome.fa")
 pathTomm9Genome = NULL # Please add here a path to a local copy of the mm9 reference genome. Not included in downloads due to size and potential redundancy.
 if(is.null(pathTomm9Genome)){stop("Path to a FASTA file of the mm9 genome is required")}
 ```
@@ -624,6 +622,65 @@ ggsave(filename = "figs/seqlogo_tk.png", gg_tk4, height = 3, width = 6, bg = "wh
 kodakarensis’ across a temperature gradient. Sequence logo at detected
 putative acetylated sites
 
+# Supplementary analysis - Bridging paired-end reads
+
+> The code to execute this analysis is provided in the Rscript
+> `supp_PairedvsSingle.R`
+
+To showcase the importance of bridging paired-end reads, which is
+implemented as an option by txtools but not, to our knowledge, by other
+tools, we analyzed m6A-seq data in yeast. In m6A-seq (Dominissini et al.
+2012), RNA is first fragmented and then subjected to immunoprecipitation
+using an anti-m6A antibody, resulting in selective capturing of
+methylated fragments. These fragments are then sequenced from both ends.
+The typical analytic pipeline consists of peak calling, based on
+coverage, in the immunoprecipitated data. While m6A-seq is not
+considered, inherently, a single-nucleotide resolution methodology, in
+an idealized scenario (infinite coverage, no sources of noise), the
+signal should peak precisely over the methylated adenosine in the DRAC
+motif.
+
+Given that the size of the immunoprecipitated fragments is around
+100-150 nt and oftentimes only ~30 nt are sequenced from each end,
+relying only on the sequenced ends results only in partial coverage of
+the insert. txtools offers the possibility of computationally bridging
+the reads, allowing to restore the full-length fragment. To assess to
+what extent the lack of complete coverage resulted in inaccurate peak
+calling, we analyzed existing m6A-seq data in yeast (Schwartz et al.
+2013) using txtools, in two modes: either in paired-end mode (in which
+paired ends are bridged) or in single-end mode (in which each read is
+considered a separate entity). We observed a roughly 8% increase in the
+number of peaks detected precisely centered on a DRAC motif (330 out of
+1475 peaks were centered on the motif in single-end processing vs 429
+out of 1405 peaks in paired-end processing) (Fig. S1).
+
+<figure>
+<img src="figs/readsProc_BP2.png" alt="Figure S1" />
+<figcaption aria-hidden="true">Figure S1</figcaption>
+</figure>
+
+This was accompanied by a mild increase in the number of peaks called in
+single-end mode, in comparison to paired-end mode (Fig. S2).
+
+<figure>
+<img src="figs/readsProc_BP1.png" alt="Figure S2" />
+<figcaption aria-hidden="true">Figure S2</figcaption>
+</figure>
+
+Thus, without bridging paired ends reads, more peaks are called but of
+poorer quality. An investigation into the source of these miscalled
+peaks revealed that oftentimes a single peak - centered within a DRAC
+motif - in paired-end mode, got split into multiple smaller peaks in
+single-end mode, resulting in calling of multiple, erroneous sites
+instead of a single correct one (Fig. S3). This analysis thus highlights
+the added value of paired-end information for the accurate calling of
+sites.
+
+<figure>
+<img src="figs/readsProc_covPeaks.png" alt="Figure S3" />
+<figcaption aria-hidden="true">Figure S3</figcaption>
+</figure>
+
 # References
 
 <div id="refs" class="references csl-bib-body hanging-indent">
@@ -634,6 +691,15 @@ Carlile, Thomas M, Maria F Rojas-Duran, Boris Zinshteyn, Hakyung Shin,
 Kristen M Bartoli, and Wendy V Gilbert. 2014. “Pseudouridine Profiling
 Reveals Regulated <span class="nocase">mRNA</span> Pseudouridylation in
 Yeast and Human Cells.” *Nature* 515 (7525): 143–46.
+
+</div>
+
+<div id="ref-dominissini2012topology" class="csl-entry">
+
+Dominissini, Dan, Sharon Moshitch-Moshkovitz, Schraga Schwartz, Mali
+Salmon-Divon, Lior Ungar, Sivan Osenberg, Karen Cesarkas, et al. 2012.
+“Topology of the Human and Mouse m6A RNA Methylomes Revealed by
+m6A-Seq.” *Nature* 485 (7397): 201–6.
 
 </div>
 
@@ -649,9 +715,9 @@ Maintainer Bioconductor Package Maintainer. 2019. “Package
 
 Körtel, Nadine, Cornelia Rücklé, You Zhou, Anke Busch, Peter Hoch-Kraft,
 F X Reymond Sutandy, Jacob Haase, et al. 2021. “Deep and Accurate
-Detection of m6A RNA Modifications Using <span
-class="nocase">miCLIP2</span> and m6Aboost Machine Learning.” *Nucleic
-Acids Res.* 49 (16): e92.
+Detection of m6A RNA Modifications Using
+<span class="nocase">miCLIP2</span> and m6Aboost Machine Learning.”
+*Nucleic Acids Res.* 49 (16): e92.
 
 </div>
 
@@ -681,14 +747,24 @@ Revealed by Quantitative Cross-Evolutionary Mapping.” *Nature* 583
 
 </div>
 
+<div id="ref-schwartz2013high" class="csl-entry">
+
+Schwartz, Schraga, Sudeep D Agarwala, Maxwell R Mumbach, Marko
+Jovanovic, Philipp Mertins, Alexander Shishkin, Yuval Tabach, et al.
+2013. “High-Resolution Mapping Reveals a Conserved, Widespread, Dynamic
+mRNA Methylation Program in Yeast Meiosis.” *Cell* 155 (6): 1409–21.
+
+</div>
+
 <div id="ref-Taoka2016-hj" class="csl-entry">
 
 Taoka, Masato, Yuko Nobe, Yuka Yamaki, Yoshio Yamauchi, Hideaki
 Ishikawa, Nobuhiro Takahashi, Hiroshi Nakayama, and Toshiaki Isobe.
-2016. “The Complete Chemical Structure of Saccharomyces Cerevisiae <span
-class="nocase">rRNA</span>: Partial Pseudouridylation of U2345 in 25s
-<span class="nocase">rRNA</span> by <span class="nocase">snoRNA</span>
-snR9.” *Nucleic Acids Res.* 44 (18): 8951–61.
+2016. “The Complete Chemical Structure of Saccharomyces Cerevisiae
+<span class="nocase">rRNA</span>: Partial Pseudouridylation of U2345 in
+25S <span class="nocase">rRNA</span> by
+<span class="nocase">snoRNA</span> snR9.” *Nucleic Acids Res.* 44 (18):
+8951–61.
 
 </div>
 

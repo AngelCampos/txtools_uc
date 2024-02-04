@@ -6,14 +6,13 @@ output:
     github_document:
         toc: true
         toc_depth: 1
-        number_sections: true
     html_document:
         number_sections: true
         theme: united
         highlight: haddock
         toc: true
-        toc_depth: 1
         toc_float: true
+        toc_depth: 1
         code_folding: show
 editor_options: 
     chunk_output_type: console
@@ -21,7 +20,7 @@ bibliography: txtools_uc.bib
 ---
 
 ```{r, Global Options, echo = F}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.show = 'hide', eval = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.show = 'hide')
 ```
 
 # Background
@@ -117,7 +116,7 @@ results for all four ribosomal transcripts are shown in Figure 2.
 ## Download and load processed data
 
 ```{r, eval = TRUE}
-download.file(url = "https://zenodo.org/record/8278045/files/useCase1.rds", 
+download.file(url = "https://zenodo.org/records/8278410/files/useCase1.rds", 
               destfile = "results/useCase1.rds")
 sc_txDTL <- readRDS("results/useCase1.rds")
 ```
@@ -168,7 +167,7 @@ SRD_1bpDS per nucleotide. Marked in green are the known pseudouridylated
 sites and marked in blue is the sole 2’-O-methylated pseudouridine.
 
 The resulting SRD_1bpDS metric shows that a simple threshold can discriminate 
-between pseudouridine harboring and non-harboring sites on rRNA. 	
+between pseudouridine harboring and non-harboring sites on rRNA.    
 
 # Use case #2. m6A miCLIP2 in mESC (Körtel et al., 2021)
 
@@ -208,12 +207,13 @@ DRACH presence, and select putative m6A sites at mean difference > 0.05 and
 p-value < 0.01 (Figure 3).
 7. Plot a metagene profile using tx_plot_metageneRegions(). (Figure 4)
 
-## Download and load processed data
+## Donload and load processed data
 
 ```{r}
-download.file(url = "https://zenodo.org/record/8278045/files/uc2_geneAnnot.bed",
+download.file(url = "https://zenodo.org/records/8278410/files/uc2_geneAnnot.bed",
               destfile = "omicRefs/uc2.geneAnnot.bed") # download gene annotation, required for some plots
-download.file(url = "https://zenodo.org/record/8278045/files/useCase2.rds",
+
+download.file(url = "https://zenodo.org/records/8278410/files/useCase2.rds",
               destfile = "results/useCase2.rds")
 
 mm9_geneAnnot <- tx_load_bed("omicRefs/uc2.geneAnnot.bed")
@@ -295,12 +295,12 @@ threshold of MRD_CtoT > 0.005.
 as the temperature of growth increases, reaching the highest levels at 95 °C.
 7. Plot a sequence logo with the ggseqlogo wrapper tx_plot_ggseqlogo(). (Figure 7)
 
-## Download and load processed data
+## Donload and load processed data
 
 ```{r}
-download.file(url = "https://zenodo.org/record/8278045/files/useCase3_dat.rds",
+download.file(url = "https://zenodo.org/records/8278410/files/useCase3_dat.rds",
               destfile = "results/useCase3_dat.rds")
-download.file(url = "https://zenodo.org/record/8278045/files/useCase3_res.rds",
+download.file(url = "https://zenodo.org/records/8278410/files/useCase3_res.rds",
               destfile = "results/useCase3_res.rds")
 
 txDTL_Tk <- readRDS("results/useCase3_dat.rds")
@@ -356,10 +356,6 @@ ggsave(filename = "figs/seqlogo_tk.png", gg_tk4, height = 3, width = 6, bg = "wh
 temperature gradient. Sequence logo at detected putative acetylated sites
 
 # References
-    
-```{r}
-download.file("https://zenodo.org/record/8278410/files/txtools_uc.bib", "txtools_uc.bib")
-```
 
 <div id="refs"></div>
 
